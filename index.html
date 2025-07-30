@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism Sign In / Sign Up</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background"></div> 
+    <div class="login-container">
+        <div class="login-box" id="login-box">
+            <h2>Sign In</h2>
+            <form id="login-form" method="POST" action="/api/login">
+                <div class="input-box">
+                    <input type="text" name="identifier" required>
+                    <label>Phone or Email</label>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" required>
+                    <label>Password</label>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <div class="links">
+                <a href="#" id="show-signup">Signup</a> |
+                <a href="#" id="show-forgot">Forgot Password?</a>
+            </div>
+        </div>
+        <div class="login-box" id="signup-box" style="display:none;">
+            <h2>Sign Up</h2>
+            <form id="signup-form" method="POST" action="/api/signup">
+                <div class="input-box">
+                    <input type="text" name="phone" required pattern="[0-9]{10}">
+                    <label>Phone Number</label>
+                </div>
+                <div class="input-box">
+                    <input type="email" name="email" required>
+                    <label>Email</label>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" required minlength="6">
+                    <label>Password</label>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="repassword" required minlength="6">
+                    <label>Re-enter Password</label>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+            <div class="links">
+                <a href="#" id="show-login">Back to Login</a>
+            </div>
+        </div>
+        <div class="login-box" id="forgot-box" style="display:none;">
+            <h2>Forgot Password</h2>
+            <form id="forgot-form">
+                <div class="input-box">
+                    <input type="text" name="phone" required pattern="[0-9]{10}">
+                    <label>Phone Number</label>
+                </div>
+                <button type="submit">Send OTP</button>
+            </form>
+            <form id="otp-form" style="display:none;">
+                <div class="input-box">
+                    <input type="text" name="otp" required pattern="[0-9]{6}">
+                    <label>Enter OTP</label>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="newpassword" required minlength="6">
+                    <label>New Password</label>
+                </div>
+                <button type="submit">Reset Password</button>
+            </form>
+            <div class="links">
+                <a href="#" id="forgot-back-login">Back to Login</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Toggle between login, signup, and forgot password
+        document.getElementById('show-signup').onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('signup-box').style.display = 'block';
+            document.getElementById('forgot-box').style.display = 'none';
+            return false;
+        };
+        document.getElementById('show-login').onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('signup-box').style.display = 'none';
+            document.getElementById('login-box').style.display = 'block';
+            document.getElementById('forgot-box').style.display = 'none';
+            return false;
+        };
+        document.getElementById('show-forgot').onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('signup-box').style.display = 'none';
+            document.getElementById('forgot-box').style.display = 'block';
+            document.getElementById('forgot-form').style.display = 'block';
+            document.getElementById('otp-form').style.display = 'none';
+            return false;
+        };
+        document.getElementById('forgot-back-login').onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('forgot-box').style.display = 'none';
+            document.getElementById('login-box').style.display = 'block';
+        };
+
+        // Handle login form submit
+        document.getElementById('login-form').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const identifier = form.identifier.value.trim();
+            const password = form.password.value;
+            
+            if (!identifier || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            // Get registered users from localStorage
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            
+            // Find user by phone or email
+            const user = registeredUsers.find(user => 
+                (user.phone === identifier || user.email === identifier) && user.password === password
+            );
+            
+            if (user) {
+                // Store current user session
+                localStorage.setItem('currentUser', JSON.stringify({
+                    phone: user.phone,
+                    email: user.email,
+                    loginTime: new Date().toISOString()
+                }));
+                
+                // Immediate redirect to website.html
+                window.location.href = 'website.html';
+                
+                console.log('User logged in successfully:', { phone: user.phone, email: user.email });
+            } else {
+                alert('Invalid phone/email or password. Please check your credentials or sign up first.');
+            }
+        };
+
+        // Handle signup form submit
+        document.getElementById('signup-form').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const phone = form.phone.value.trim();
+            const email = form.email.value.trim();
+            const password = form.password.value;
+            const repassword = form.repassword.value;
+            
+            // Validation
+            if (!phone || !email || !password || !repassword) {
+                alert('Please fill all fields');
+                return;
+            }
+            if (password !== repassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            if (!/^\d{10}$/.test(phone)) {
+                alert('Invalid phone number. Please enter 10 digits.');
+                return;
+            }
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+            
+            // Check if user already exists
+            const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const userExists = existingUsers.some(user => user.phone === phone || user.email === email);
+            
+            if (userExists) {
+                alert('User with this phone number or email already exists!');
+                return;
+            }
+            
+            // Save user details to localStorage
+            const newUser = {
+                phone: phone,
+                email: email,
+                password: password, // In real app, this should be hashed
+                registeredAt: new Date().toISOString()
+            };
+            
+            existingUsers.push(newUser);
+            localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+            
+            // Clear form
+            form.reset();
+            
+            // Show success message and switch to login
+            alert('Signup successful! Your details have been saved. Please login with your credentials.');
+            document.getElementById('signup-box').style.display = 'none';
+            document.getElementById('login-box').style.display = 'block';
+            
+            console.log('User registered successfully:', { phone, email });
+        };
+
+        // Simulated OTP storage (for demo)
+        let simulatedOTP = '';
+        let otpPhone = '';
+
+        // Handle forgot password (send OTP)
+        document.getElementById('forgot-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const phone = e.target.phone.value.trim();
+            if (!/^\d{10}$/.test(phone)) return alert('Enter a valid 10-digit phone number');
+            // Simulate OTP generation (in real app, backend/Python would send SMS)
+            simulatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            otpPhone = phone;
+            alert('OTP sent to your phone (demo: ' + simulatedOTP + ')');
+            document.getElementById('forgot-form').style.display = 'none';
+            document.getElementById('otp-form').style.display = 'block';
+        };
+
+        // Handle OTP and password reset
+        document.getElementById('otp-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const otp = e.target.otp.value.trim();
+            const newpassword = e.target.newpassword.value;
+            if (otp !== simulatedOTP) return alert('Invalid OTP');
+            if (!newpassword || newpassword.length < 6) return alert('Password must be at least 6 characters');
+            // Call backend to update password
+            const res = await fetch('http://localhost:3001/api/users/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: otpPhone, newpassword })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                alert('Password reset successful! Please login.');
+                document.getElementById('forgot-box').style.display = 'none';
+                document.getElementById('login-box').style.display = 'block';
+            } else {
+                alert(data.error || 'Password reset failed');
+            }
+        };
+    </script>
+</body>
+</html> 

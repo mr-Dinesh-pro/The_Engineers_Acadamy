@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Busters</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fffbf0;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        button {
+            background-color: #ff5733;
+            color: white;
+            font-size: 20px;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #ff2e00;
+        }
+
+        .games-list {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .games-list a {
+            display: block;
+            font-size: 20px;
+            margin: 15px 0;
+            text-decoration: none;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #29b6f6;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .games-list a:hover {
+            background-color: #0277bd;
+        }
+
+        .games-list a:nth-child(2) {
+            background-color: #ffca28;
+        }
+
+        .games-list a:nth-child(2):hover {
+            background-color: #ff8f00;
+        }
+
+        .games-list a:nth-child(3) {
+            background-color: #66bb6a;
+        }
+
+        .games-list a:nth-child(3):hover {
+            background-color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button id="stressBustersBtn">Stress Busters</button>
+    <div class="games-list" id="gamesList">
+        <a href="https://2048app10.tiiny.site/" target="_blank">2048 Game</a>
+        <a href="https://www.candycrushsaga.com" target="_blank">Candy Crush</a>
+        <a href="https://www.wordsearchpuzzle.net/" target="_blank">Word Puzzle</a>
+    </div>
+</div>
+
+<script>
+    const stressBustersBtn = document.getElementById('stressBustersBtn');
+    const gamesList = document.getElementById('gamesList');
+
+    stressBustersBtn.addEventListener('click', () => {
+        stressBustersBtn.style.display = 'none';  // Hide the button once clicked
+        gamesList.style.display = 'block';  // Show the games list
+    });
+</script>
+
+</body>
+</html>
