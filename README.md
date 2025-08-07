@@ -6,13 +6,7 @@ Check out the live site here: [The Engineers Acadamy Website](https://mr-dinesh-
 
 ##  Website Preview
 
-![The Engineers Acadamy Screenshot](assets/engineers-acadamy-screenshot.png)
 
-
-
-
-
-##  Screenshot & Images
 [login page ]
 <img width="1919" height="875" alt="Screenshot 2025-08-07 180909" src="https://github.com/user-attachments/assets/c803e4a7-0d0e-4ab0-b8dd-ffdc9a304d7f" />
 [home page]
